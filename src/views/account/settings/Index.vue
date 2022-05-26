@@ -15,26 +15,26 @@
                 {{ $t('account.settings.menuMap.basic') }}
               </router-link>
             </a-menu-item>
-            <a-menu-item key="/account/settings/security">
+<!--            <a-menu-item key='/account/settings/security'>
               <router-link :to="{ name: 'SecuritySettings' }">
                 {{ $t('account.settings.menuMap.security') }}
               </router-link>
             </a-menu-item>
-            <a-menu-item key="/account/settings/custom">
+            <a-menu-item key='/account/settings/custom'>
               <router-link :to="{ name: 'CustomSettings' }">
                 {{ $t('account.settings.menuMap.custom') }}
               </router-link>
             </a-menu-item>
-            <a-menu-item key="/account/settings/binding">
+            <a-menu-item key='/account/settings/binding'>
               <router-link :to="{ name: 'BindingSettings' }">
                 {{ $t('account.settings.menuMap.binding') }}
               </router-link>
             </a-menu-item>
-            <a-menu-item key="/account/settings/notification">
+            <a-menu-item key='/account/settings/notification'>
               <router-link :to="{ name: 'NotificationSettings' }">
                 {{ $t('account.settings.menuMap.notification') }}
               </router-link>
-            </a-menu-item>
+            </a-menu-item>-->
           </a-menu>
         </div>
         <div class="account-settings-info-right">

@@ -1,8 +1,8 @@
 <template>
   <div>
-    <a-button type='' @click='showDrawer'>修改记录</a-button>
+    <a-button type='' @click='showDrawer'>发布心愿</a-button>
     <a-drawer
-      title='修改项目文件'
+      title='创建文章'
       :width='600'
       :visible='visible'
       :body-style="{ paddingBottom: '0px' }"
@@ -10,30 +10,33 @@
     >
       <a-form layout='left' hide-required-mark>
         <a-form-item
-          label='项目文件'
-          :labelCol='{lg: {span: 3}, sm: {span: 7}}'
-          :wrapperCol='{lg: {span: 21}, sm: {span: 17} }'
-          :required='true'>
-          <ModifyFile @getModifyFileUrlFromChild='getModifyFileUrlFromChild'></ModifyFile>
-        </a-form-item>
-        <a-form-item
-          label='项目节点'
+          label='文章标题'
           :labelCol='{lg: {span: 3}, sm: {span: 7}}'
           :wrapperCol='{lg: {span: 21}, sm: {span: 17} }'>
-          <a-select :default-value='currentNode' style='width: 120px' v-model='history.current_process'>
-            <a-select-option :key='index' v-for='(node, index) in allNode' :value='node'>
-              {{ node }}
-            </a-select-option>
-          </a-select>
+          <a-input
+            rows='10'
+            placeholder='请输入文章标题'
+            v-model='article.title'
+          />
         </a-form-item>
         <a-form-item
-          label='提交描述'
+          label='文章简介'
+          :labelCol='{lg: {span: 3}, sm: {span: 7}}'
+          :wrapperCol='{lg: {span: 21}, sm: {span: 17} }'>
+          <a-input
+            rows='10'
+            placeholder='请输入文章简介'
+            v-model='article.description'
+          />
+        </a-form-item>
+        <a-form-item
+          label='文章内容'
           :labelCol='{lg: {span: 3}, sm: {span: 7}}'
           :wrapperCol='{lg: {span: 21}, sm: {span: 17} }'>
           <a-textarea
             rows='10'
-            placeholder='请输入本次提交的项目信息'
-            v-model='history.description'
+            placeholder='请输入文章内容'
+            v-model='article.content'
           />
         </a-form-item>
       </a-form>
@@ -54,7 +57,7 @@
         <a-button :style="{ marginRight: '8px' }" @click='onClose'>
           取消
         </a-button>
-        <a-button type='primary' @click='modifyProjectHistory'>
+        <a-button type='primary' @click='createNewArticle'>
           提交
         </a-button>
       </div>
@@ -64,21 +67,21 @@
 <script>
 // import UploadFile from '@/views/upload/UploadFile'
 import ModifyFile from '@/views/upload/ModifyFile'
-import { modifyHistory } from '@/api/project'
+import { createArticle } from '@/api/article'
 
 export default {
+  name: 'CreateArticle',
   components: {
     // UploadFilexx
     ModifyFile
   },
-  props: ['currentNode', 'allNode', 'projectID'],
   data() {
     return {
       visible: false,
-      history: {
+      article: {
+        title: '',
         description: '',
-        url: '',
-        current_process: ''
+        content: ''
       }
     }
   },
@@ -89,18 +92,23 @@ export default {
     onClose() {
       this.visible = false
     },
-    modifyProjectHistory() {
-      this.history.project_id = this.projectID
-      modifyHistory(this.history).then(res => {
-        this.visible = false
-        this.$emit('syncFromModify')
-        this.history.description = ''
-        this.history.url = ''
-        this.history.current_process = ''
-      })
+    syncArticle() {
+      this.$emit('syncArticle')
     },
-    getModifyFileUrlFromChild(url) {
-      this.history.url = url
+    createNewArticle() {
+      debugger
+      createArticle(this.article).then(res => {
+        this.visible = false
+        if (res.code !== 0) {
+          this.$message.error(`创建文章失败，原因为${res.message}`)
+          return
+        }
+        this.article.title = ''
+        this.article.description = ''
+        this.article.content = ''
+        this.$message.info('创建成功')
+        this.$emit('syncArticle')
+      })
     }
   }
 }

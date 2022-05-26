@@ -1,55 +1,55 @@
 <template>
-  <a-dropdown v-if="currentUser && currentUser.name" placement="bottomRight">
-    <span class="ant-pro-account-avatar">
-      <a-avatar size="small" src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png" class="antd-pro-global-header-index-avatar" />
-      <span>马翔龙</span>
+  <a-dropdown v-if='true' placement='bottomRight'>
+    <span class='ant-pro-account-avatar'>
+      <a-avatar size='small' :src='avatar' class='antd-pro-global-header-index-avatar' />
+      <span>{{ nickname }}</span>
     </span>
     <template v-slot:overlay>
-      <a-menu class="ant-pro-drop-down menu" :selected-keys="[]">
-        <a-menu-item v-if="menu" key="center" @click="handleToCenter">
-          <a-icon type="user" />
+      <a-menu class='ant-pro-drop-down menu' :selected-keys='[]'>
+        <a-menu-item v-if='menu' key='center' @click='handleToCenter'>
+          <a-icon type='user' />
           {{ $t('menu.account.center') }}
         </a-menu-item>
-        <a-menu-item v-if="menu" key="settings" @click="handleToSettings">
-          <a-icon type="setting" />
+        <a-menu-item v-if='menu' key='settings' @click='handleToSettings'>
+          <a-icon type='setting' />
           {{ $t('menu.account.settings') }}
         </a-menu-item>
-        <a-menu-divider v-if="menu" />
-        <a-menu-item key="logout" @click="handleLogout">
-          <a-icon type="logout" />
+        <a-menu-divider v-if='menu' />
+        <a-menu-item key='logout' @click='handleLogout'>
+          <a-icon type='logout' />
           {{ $t('menu.account.logout') }}
         </a-menu-item>
       </a-menu>
     </template>
   </a-dropdown>
   <span v-else>
-    <a-spin size="small" :style="{ marginLeft: 8, marginRight: 8 }" />
+    <a-spin size='small' :style='{ marginLeft: 8, marginRight: 8 }' />
   </span>
 </template>
 
 <script>
 import { Modal } from 'ant-design-vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AvatarDropdown',
   props: {
-    currentUser: {
-      type: Object,
-      default: () => null
-    },
     menu: {
       type: Boolean,
       default: true
     }
   },
+  computed: {
+    ...mapGetters(['nickname', 'avatar'])
+  },
   methods: {
-    handleToCenter () {
+    handleToCenter() {
       this.$router.push({ path: '/account/center' })
     },
-    handleToSettings () {
+    handleToSettings() {
       this.$router.push({ path: '/account/settings' })
     },
-    handleLogout (e) {
+    handleLogout(e) {
       Modal.confirm({
         title: this.$t('layouts.usermenu.dialog.title'),
         content: this.$t('layouts.usermenu.dialog.content'),
@@ -61,18 +61,20 @@ export default {
             this.$router.push({ name: 'login' })
           })
         },
-        onCancel () {}
+        onCancel() {
+        }
       })
     }
   }
 }
 </script>
 
-<style lang="less" scoped>
+<style lang='less' scoped>
 .ant-pro-drop-down {
   /deep/ .action {
     margin-right: 8px;
   }
+
   /deep/ .ant-dropdown-menu-item {
     min-width: 160px;
   }

@@ -19,6 +19,7 @@ const constantRouterComponents = {
   Analysis: () => import('@/views/dashboard/Analysis'),
   Home: () => import('@/views/home/Home'),
   CreateProject: () => import('@/views/project/CreateProject'),
+  ArticleDetail: () => import('@/views/list/search/ArticleDetail'),
 
   // form
   BasicForm: () => import('@/views/form/basicForm'),
@@ -31,7 +32,7 @@ const constantRouterComponents = {
   CardList: () => import('@/views/list/CardList'),
   SearchLayout: () => import('@/views/list/search/SearchLayout'),
   SearchArticles: () => import('@/views/list/search/Article'),
-  SearchProjects: () => import('@/views/list/search/Projects'),
+  SearchProjects: () => import('@/views/project/Projects'),
   SearchApplications: () => import('@/views/list/search/Applications'),
   ProfileBasic: () => import('@/views/profile/basic'),
   ProfileAdvanced: () => import('@/views/profile/advanced/Advanced'),

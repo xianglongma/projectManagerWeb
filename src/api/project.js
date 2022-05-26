@@ -3,7 +3,9 @@ import request from '@/utils/request'
 const projectApi = {
   ProjectCreate: 'project',
   ProjectRetrieve: 'project',
-  ProjectHistoryModify: 'project/history/update'
+  ProjectList: 'project/list',
+  ProjectHistoryModify: 'history',
+  HistoryList: 'history/list'
 }
 
 /****
@@ -21,7 +23,7 @@ export function createProject(data) {
 }
 
 /****
- * 获取项目
+ * 根据id获取项目
  * */
 export function retrieveProject(id) {
   return request({
@@ -34,7 +36,21 @@ export function retrieveProject(id) {
 }
 
 /****
- * 获取项目
+ * 获取项目列表
+ * */
+export function listProject(params) {
+  return request({
+    url: projectApi.ProjectList,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    params: params
+  })
+}
+
+/****
+ * 修改项目项目记录
  * */
 export function modifyHistory(params) {
   return request({
@@ -43,6 +59,21 @@ export function modifyHistory(params) {
     headers: {
       'Content-Type': 'application/json;charset=UTF-8'
     },
-    data:params,
+    data: params
+  })
+}
+
+
+/****
+ * 获取项目记录
+ * */
+export function listHistory(params) {
+  return request({
+    url: projectApi.HistoryList,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    params: params
   })
 }

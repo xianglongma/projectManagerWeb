@@ -6,20 +6,20 @@
       :header="`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`"
       item-layout='horizontal'
     >
-      <a-list-item slot='renderItem' slot-scope='item'>
+      <a-list-item v-for='item in comments'>
         <a-comment
-          :author='item.author'
+          :author='item.nickname'
           :avatar='item.avatar'
           :content='item.content'
-          :datetime='item.datetime'
+          :datetime='item.comment_time'
         />
       </a-list-item>
     </a-list>
     <a-comment>
       <a-avatar
         slot='avatar'
-        src='https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png'
-        alt='Han Solo'
+        :src='avatar'
+        :alt='nickname'
       />
       <div slot='content'>
         <a-form-item>
@@ -27,7 +27,7 @@
         </a-form-item>
         <a-form-item>
           <a-button html-type='submit' :loading='submitting' type='primary' @click='handleSubmit'>
-            评论
+            添加评论
           </a-button>
         </a-form-item>
       </div>
@@ -36,10 +36,12 @@
 </template>
 <script>
 import moment from 'moment'
+import { mapGetters } from 'vuex'
+import { createComment, listComment } from '@/api/comment'
 
 export default {
-  name: 'MyComment',
-  data () {
+  props: ['resourceId', 'resourceType'],
+  data() {
     return {
       comments: [],
       submitting: false,
@@ -47,29 +49,73 @@ export default {
       moment
     }
   },
+  created() {
+    this.updateComments()
+  },
+  computed: {
+    ...mapGetters(['nickname', 'avatar'])
+  },
   methods: {
-    handleSubmit () {
+    updateComments() {
+      if (this.resourceId === undefined || this.resourceId === 0 || this.resourceId === '') {
+        if (this.resourceType === 'project') {
+          this.resourceId = localStorage.getItem('projectID')
+        } else if (this.resourceType === 'article') {
+          this.resourceId = localStorage.getItem('articleID')
+        }
+      }
+      const params = {
+        resource_id: Number(this.resourceId),
+        resource_type: this.resourceType
+      }
+      listComment(params).then(res => {
+        if (res.code !== 0) {
+          this.$message.error(res.message)
+          return
+        }
+        this.comments = res.data
+        this.comments.forEach(c => {
+          c.comment_time = moment(c.comment_time.slice(0, 19), 'YYYY-MM-DD hh:mm:ss').fromNow()
+        })
+        this.submitting = false
+      })
+    },
+    handleSubmit() {
       if (!this.value) {
         return
       }
-
+      if (!this.resourceId || this.resourceId === '') {
+        this.resourceId = localStorage.getItem('projectID')
+      }
       this.submitting = true
-
-      setTimeout(() => {
-        this.submitting = false
-        this.comments = [
-          {
-            author: 'Han Solo',
-            avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-            content: this.value,
-            datetime: moment().fromNow()
-          },
-          ...this.comments
-        ]
-        this.value = ''
-      }, 1000)
+      createComment({
+        content: this.value,
+        resource_id: Number(this.resourceId),
+        resource_type: this.resourceType
+      }).then((res) => {
+        if (res.code !== 0) {
+          this.$message.error(res.message)
+          return
+        }
+        this.$message.info('评论成功')
+        this.updateComments()
+      })
+      this.value = ''
+      // setTimeout(() => {
+      //   this.submitting = false
+      //   this.comments = [
+      //     {
+      //       author: 'Han Solo',
+      //       avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
+      //       content: this.value,
+      //       datetime: moment().fromNow()
+      //     },
+      //     ...this.comments
+      //   ]
+      //   this.value = ''
+      // }, 1000)
     },
-    handleChange (e) {
+    handleChange(e) {
       this.value = e.target.value
     }
   }

@@ -117,7 +117,7 @@
 <script>
 // import md5 from 'md5'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { timeFix } from '@/utils/util'
 import { getSmsCaptcha, get2step } from '@/api/login'
 
@@ -153,6 +153,9 @@ export default {
         this.requiredTwoStepCaptcha = false
       })
     // this.requiredTwoStepCaptcha = true
+  },
+  computed:{
+    ...mapGetters(['nickname', 'avatar']),
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
@@ -265,7 +268,7 @@ export default {
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
-          message: '欢迎',
+          message: `欢迎${this.nickname}`,
           description: `${timeFix()}，欢迎回来`
         })
       }, 1000)

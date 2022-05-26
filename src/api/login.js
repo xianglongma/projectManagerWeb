@@ -12,7 +12,9 @@ const userApi = {
   UserInfo: '/userinfo',
   UserMenu: '/navbar',
   FileUpload: '/file/upload',
-  UserInfoList: '/user/list'
+  UserInfoList: '/user/list',
+  UserInfoOrderList: '/user/order/list',
+  UserUpdateInfo: '/user'
 }
 
 /**
@@ -120,5 +122,27 @@ export function getUserList (params) {
       'Content-Type': 'application/json;charset=UTF-8'
     },
     params: params
+  })
+}
+
+export function getUserOrderList (params) {
+  return request({
+    url: userApi.UserInfoOrderList,
+    method: 'get',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    params: params
+  })
+}
+
+export function updateUserInfo (params) {
+  return request({
+    url: userApi.UserUpdateInfo,
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+    },
+    data: params
   })
 }

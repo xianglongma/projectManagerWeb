@@ -225,7 +225,7 @@ export default {
           const registerParam = { ...values }
           Register(registerParam)
             .then((res) => this.loginSuccess(res))
-            .catch(err => this.requestFailed(err))
+            // .catch(err => this.requestFailed(err))
             .finally(() => {
               state.registerBtn = false
             })
@@ -266,7 +266,7 @@ export default {
               clearInterval(interval)
               state.time = 60
               state.smsSendBtn = false
-              this.requestFailed(err)
+              // this.requestFailed(err)
             })
           }
         }

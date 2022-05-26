@@ -20,14 +20,10 @@ export default {
       fileList: []
     }
   },
+
   methods: {
     onFileUpload({ file, name }, type) { // 文件上传
-      if (this.fileList.length > 0) {
-        this.$message.warning('至多上传一个文件，若上传多个请使用压缩包格式')
-        return
-      }
       this.loading = true
-
       const formData = new FormData()
       formData.append('file', file, name)
       formData.append('type', type)

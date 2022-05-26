@@ -1,10 +1,10 @@
 <template>
   <div>
     <a-row type='flex' justify='space-between' align='top'>
-      <a-col :span='17'>
+      <a-col :span='18'>
         <a-card title='推荐' :head-style='{fontSize:"20px",height:"70px"}'>
           <div slot='extra'>
-            <a-button type='link'>
+            <a-button type='link' @click='goToProjectMore'>
               <svg
                 t='1652978630224'
                 class='icon'
@@ -22,66 +22,25 @@
               </svg>
               更多
             </a-button>
-            <a-radio-group v-model='status'>
-              <a-radio-button value='all'>全部</a-radio-button>
-              <a-radio-button value='processing'>进行中</a-radio-button>
-              <a-radio-button value='waiting'>等待中</a-radio-button>
+            <a-radio-group v-model='type'>
+              <a-radio-button value='time'>最新</a-radio-button>
+              <a-radio-button value='star'>收藏</a-radio-button>
+              <a-radio-button value='score'>积分</a-radio-button>
             </a-radio-group>
           </div>
         </a-card>
-        <a-list
-          :data-source='items'
-          :grid='{ gutter: 16, column: 3}'>
-          <a-list-item slot='renderItem' slot-scope='item'>
-            <a-card style='width: 300px'>
-              <a-card-meta :title='item.title'>
-                <template slot='avatar'>
-                  <a-avatar :src='url' />
-                </template>
-              </a-card-meta>
-              <template slot='actions'>
-                <a-tooltip title='收藏'>
-                  <a-icon onclick='console.log("收藏")' type='heart' />
-                  {{ item.stars }}
-                </a-tooltip>
-                <a-tooltip title='查看'>
-                  <a-icon type='edit' />
-                </a-tooltip>
-                <a-tooltip title='分享'>
-                  <a-icon type='share-alt' />
-                </a-tooltip>
-              </template>
-              <p>{{ item.description }}</p>
-            </a-card>
-          </a-list-item>
-        </a-list>
+        <ProjectList :projects='projects'></ProjectList>
       </a-col>
       <a-col :span='6' style='align-items: flex-end; background: rgb(240, 242, 245)'>
         <a-card title='排行榜'>
-          <a href='www.baidu.com' slot='extra'>更多</a>
-          <a-card size='small' :bordered='false'>
-            <a-card-meta :title='title'>
+<!--          <a slot='extra' @click='goToProjectMore'>更多</a>-->
+          <a-card size='small' :bordered='false' v-for='(user, index) in users' :key='index'>
+            <a-card-meta :title='user.nickname'>
               <template slot='avatar'>
-                <a-avatar :src='url' />
+                <a-avatar :src='user.avatar' />
               </template>
             </a-card-meta>
-            积分:20
-          </a-card>
-          <a-card size='small' :bordered='false'>
-            <a-card-meta :title='title'>
-              <template slot='avatar'>
-                <a-avatar :src='url' />
-              </template>
-            </a-card-meta>
-            积分:20
-          </a-card>
-          <a-card size='small' :bordered='false'>
-            <a-card-meta :title='title'>
-              <template slot='avatar'>
-                <a-avatar :src='url' />
-              </template>
-            </a-card-meta>
-            积分:20
+            积分:{{user.score}}
           </a-card>
         </a-card>
       </a-col>
@@ -91,40 +50,46 @@
 </template>
 
 <script>
+import { listProject } from '@/api/project'
+import ProjectList from '@/views/home/ProjectList'
+import { getUserOrderList } from '@/api/login'
 export default {
   name: 'Home',
+  components: {
+    ProjectList
+  },
   data() {
     return {
-      status: 0,
-      url: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      title: 'title',
-      items: [
-        {
-          stars: 1,
-          url: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          title: 'title',
-          description: '这是 1 哥米哦啊书'
-        },
-        {
-          stars: 2,
-          url: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          title: 'title',
-          description: '这是 2 哥米哦啊书'
-        },
-        {
-          stars: 3,
-          url: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          title: '4',
-          description: '这是 3 哥米哦啊书'
-        },
-        {
-          stars: 4,
-          url: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-          title: '5',
-          description: '这是 4 哥米哦啊书'
-        }
-      ]
+      type: '',
+      projects: [],
+      users:[]
     }
+  },
+  created() {
+    this.updateProjects()
+    this.updateUsers()
+  },
+  methods: {
+    updateProjects() {
+      listProject({ type: this.type }).then(res => {
+        if (res.code !== 0) {
+          this.$message.error('获取项目列表错误')
+        }
+        this.projects = res.data
+      })
+    },
+    updateUsers() {
+      getUserOrderList().then(res=>{
+        if (res.code !== 0) {
+          this.$message.error('获取用户列表错误')
+        }
+        this.users = res.data
+      })
+    },
+    goToProjectMore(e) {
+      e.preventDefault()
+      this.$router.push({ path: '/ManagerProjects' })
+    },
   }
 }
 </script>

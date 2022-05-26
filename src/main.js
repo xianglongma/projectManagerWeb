@@ -10,6 +10,7 @@ import i18n from './locales'
 import { VueAxios } from './utils/request'
 import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import themePluginConfig from '../config/themePluginConfig'
+import { Comment } from 'ant-design-vue'
 import Rate from 'ant-design-vue/lib/rate'
 import 'ant-design-vue/dist/antd.css'
 // mock
@@ -26,6 +27,7 @@ Vue.config.productionTip = false
 
 // mount axios to `Vue.$http` and `this.$http`
 Vue.use(VueAxios)
+Vue.use(Comment)
 // use pro-layout components
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-container', PageHeaderWrapper)

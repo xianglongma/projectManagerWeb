@@ -7,12 +7,11 @@
       </div>
       <template #extra>
         <a-button type=''>{{ $t('result.success.btn-return') }}</a-button>
-        <a-button style='margin-left: 8px'>提交记录</a-button>
-        <ModifyProjectProcess :projectID='project.ID' :current-node='project.current_process' :all-node='nodes' style='margin-left: 8px;display: inline-block'></ModifyProjectProcess>
+        <ProjectHistory :project='project' style='display: inline-block;margin-left: 8px;'></ProjectHistory>
+        <ModifyProjectProcess @syncFromModify='syncFromModify' :projectID='project.ID' :current-node='project.current_process' :all-node='nodes' style='margin-left: 8px;display: inline-block'></ModifyProjectProcess>
       </template>
       <div style='width: 100%;text-align: center;'>
         <img :src='project.icon' style='height: 96px; width: 96px; vertical-align: middle;display: inline-block;'>
-
       </div>
       <div style='text-align: center; font-size: 24px;'>{{ project.title }}</div>
       <div style='text-align: center; font-size: 14px; margin-bottom: 40px;color: darkgray'>{{ project.description }}
@@ -49,24 +48,24 @@
         </a-row>
         <a-steps :current='currentNode' :direction='isMobile && directionType.vertical || directionType.horizontal'
                  progressDot>
-          <a-step v-for='(item, index) in nodes' :title='item'>
+          <a-step :key='index' v-for='(item, index) in nodes' :title='item'>
             <span style='font-size: 14px' slot='title'>{{ $t('result.success.step1-title') }}</span>
             <template slot='description'>
-              <div
-                style='fontSize: 12px;
-                 color: rgba(0, 0, 0, 0.45); position: relative; left: 42px;text-align: left;'
-                slot='description'>
-                <div v-if='index <1'style='margin: 8px 0 4px'>
-                  {{project.nickname}}
-                </div>
-                <div v-if='index <1'>{{ projectStart }}</div>
-              </div>
+<!--              <div-->
+<!--                style='fontSize: 12px;-->
+<!--                 color: rgba(0, 0, 0, 0.45); position: relative; left: 42px;text-align: left;'-->
+<!--                slot='description'>-->
+<!--                <div v-if='index <1'style='margin: 8px 0 4px'>-->
+<!--                  {{project.nickname}}-->
+<!--                </div>-->
+<!--                <div v-if='index <1'>{{ projectStart }}</div>-->
+<!--              </div>-->
             </template>
           </a-step>
         </a-steps>
       </div>
     </a-card>
-    <my-comment></my-comment>
+    <my-comment :resource-id='projectID' resource-type='project'></my-comment>
   </a-col>
 </template>
 
@@ -74,6 +73,7 @@
 import { baseMixin } from '@/store/app-mixin'
 import MyComment from '@/views/comment/MyComment'
 import ModifyProjectProcess from '@/views/result/ModifyProjectProcess'
+import ProjectHistory from '@/views/result/ProjectHistory'
 import logoUrl from '@/assets/logo.svg?inline'
 import { retrieveProject } from '@/api/project'
 import dayjs from 'dayjs'
@@ -86,7 +86,7 @@ const directionType = {
 export default {
   name: 'Success',
   // eslint-disable-next-line standard/object-curly-even-spacing
-  components: { MyComment, logoUrl, ModifyProjectProcess},
+  components: { MyComment, logoUrl, ModifyProjectProcess, ProjectHistory},
   mixins: [baseMixin],
   data() {
     this.directionType = directionType
@@ -96,7 +96,18 @@ export default {
       projectStart: '',
       projectEnd: '',
       nodes: [],
-      currentNode: 0
+      currentNode: 0,
+    }
+  },
+  methods:{
+    syncFromModify() {
+      retrieveProject(this.project.ID).then(res => {
+        if (res.code !== 0) {
+          this.$message.error(res.message)
+          return
+        }
+        this.project = res.data
+      })
     }
   },
   beforeCreate() {
